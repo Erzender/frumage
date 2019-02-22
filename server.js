@@ -13,6 +13,8 @@ const routes = express.Router()
 
 routes.post('/account', login.newAccount)
 
+routes.post('/login', login.login)
+
 routes.get('*', (req, res) =>
   res.status(501).send('This is not the route you are looking for.')
 )

@@ -2,8 +2,24 @@ const data = require('../data/_model')
 const errors = require('../errors')
 const bcrypt = require('bcrypt')
 
-exports.login = (req, res) => {
-  res.send('nique')
+exports.login = async (req, res) => {
+  if (!req.body || !req.body.name || !req.body.password) {
+    return res.status(400).send(errors.missing_parameters)
+  }
+  try {
+    let user = await data.User.findOne({ where: { name: req.body.name } })
+    if (!user) {
+      return res.status(404).send(errors.user_not_found)
+    }
+    let pass = await bcrypt.compare(req.body.password, user.dataValues.password)
+    if (!pass) {
+      return res.status(403).send('wrong_password')
+    }
+  } catch (err) {
+    console.error(err)
+    return res.status(503).send(errors.server_error)
+  }
+  return res.json({ success: true, message: 'logged in !' })
 }
 
 exports.newAccount = async (req, res) => {
