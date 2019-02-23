@@ -4,6 +4,22 @@ const data = require('../data/_model')
 const errors = require('../errors')
 const bcrypt = require('bcrypt')
 
+exports.tokenValidation = async (req, res, next) => {
+  let token = req.headers['token']
+  let decoded = null
+  if (!token) {
+    next()
+  }
+  try {
+    decoded = jwt.verify(token, req.app.get('superSecret'))
+  } catch (err) {
+    console.error(err)
+    return res.status(503).send(errors.server_error)
+  }
+  req.decoded = decoded
+  next()
+}
+
 exports.login = async (req, res) => {
   let user = null
   let group = null
@@ -32,7 +48,7 @@ exports.login = async (req, res) => {
     success: true,
     message: 'logged in !',
     token: token,
-    profile: { name: user.name, picture: user.picture, group: group }
+    profile: { id: user.id, name: user.name, picture: user.picture, group: group }
   })
 }
 
