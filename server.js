@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const cors = require('cors')
 
 const config = require('./config.json')
 const login = require('./pres/login')
@@ -8,6 +9,7 @@ const account = require('./pres/account')
 const db = require('./data/_config')
 
 app.use(bodyParser.json())
+app.use(cors())
 app.set('superSecret', process.env.SECRET || config.SECRET)
 
 app.get('/', (req, res) => res.send('Hello world'))
