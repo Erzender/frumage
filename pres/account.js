@@ -5,7 +5,7 @@ exports.getProfile = async (req, res) => {
   let user = null
   let group = null
   try {
-    user = await data.User.findById(req.params['id'])
+    user = await data.User.findByPk(req.params['id'])
     if (!user) {
       return res.status(404).send(errors.user_not_found)
     }
