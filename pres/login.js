@@ -5,12 +5,13 @@ const errors = require('../errors')
 const bcrypt = require('bcrypt')
 
 exports.login = async (req, res) => {
-  let token = null
+  let user = null
+  let group = null
   if (!req.body || !req.body.name || !req.body.password) {
     return res.status(400).send(errors.missing_parameters)
   }
   try {
-    let user = await data.User.findOne({ where: { name: req.body.name } })
+    user = await data.User.findOne({ where: { name: req.body.name } })
     if (!user) {
       return res.status(404).send(errors.user_not_found)
     }
@@ -18,14 +19,21 @@ exports.login = async (req, res) => {
     if (!pass) {
       return res.status(403).send('wrong_password')
     }
-    token = jwt.sign({ id: user.id }, req.app.get('superSecret'), {
-      expiresIn: 86400
-    })
+    group = await user.getGroup()
+    group = group ? group.dataValues.name : 'default'
   } catch (err) {
     console.error(err)
     return res.status(503).send(errors.server_error)
   }
-  return res.json({ success: true, message: 'logged in !', token: token })
+  let token = jwt.sign({ id: user.id }, req.app.get('superSecret'), {
+    expiresIn: 86400
+  })
+  return res.json({
+    success: true,
+    message: 'logged in !',
+    token: token,
+    profile: { name: user.name, picture: user.picture, group: group }
+  })
 }
 
 exports.newAccount = async (req, res) => {
