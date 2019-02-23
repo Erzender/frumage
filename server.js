@@ -2,10 +2,12 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 
+const config = require('./config.json')
 const login = require('./pres/login')
 const db = require('./data/_config')
 
 app.use(bodyParser.json())
+app.set('superSecret', process.env.SECRET || config.SECRET)
 
 app.get('/', (req, res) => res.send('Hello world'))
 

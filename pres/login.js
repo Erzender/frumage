@@ -1,8 +1,11 @@
+const jwt = require('jsonwebtoken')
+
 const data = require('../data/_model')
 const errors = require('../errors')
 const bcrypt = require('bcrypt')
 
 exports.login = async (req, res) => {
+  let token = null
   if (!req.body || !req.body.name || !req.body.password) {
     return res.status(400).send(errors.missing_parameters)
   }
@@ -15,11 +18,14 @@ exports.login = async (req, res) => {
     if (!pass) {
       return res.status(403).send('wrong_password')
     }
+    token = jwt.sign({ id: user.id }, req.app.get('superSecret'), {
+      expiresIn: 86400
+    })
   } catch (err) {
     console.error(err)
     return res.status(503).send(errors.server_error)
   }
-  return res.json({ success: true, message: 'logged in !' })
+  return res.json({ success: true, message: 'logged in !', token: token })
 }
 
 exports.newAccount = async (req, res) => {
