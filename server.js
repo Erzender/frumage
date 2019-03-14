@@ -3,10 +3,13 @@ const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
 
-const config = require('./config.json')
+const db = require('./data/_config')
+const config = require('./utils/loadConfig')
+
 const login = require('./pres/login')
 const account = require('./pres/account')
-const db = require('./data/_config')
+const topics = require('./pres/topics')
+const threads = require('./pres/threads')
 
 app.use(bodyParser.json())
 app.use(cors())
@@ -22,6 +25,9 @@ routes.post('/login', login.login)
 routes.use(login.tokenValidation)
 
 routes.get('/profile/:id', account.getProfile)
+routes.get('/topics', topics.getTopics)
+routes.post('/topic', topics.newTopic)
+routes.post('/thread', threads.newThread)
 
 routes.get('*', (req, res) =>
   res.status(501).send('This is not the route you are looking for.')

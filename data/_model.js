@@ -4,16 +4,16 @@ const db = require('./_config')
 const User = db.sequelize.define('user', {
   password: Sequelize.STRING,
   picture: Sequelize.STRING,
-  name: { type: Sequelize.STRING, unique: true }
-})
-
-const Group = db.sequelize.define('group', {
-  name: { type: Sequelize.STRING, unique: true }
+  name: { type: Sequelize.STRING, unique: true },
+  rank: Sequelize.STRING
 })
 
 const Topic = db.sequelize.define('topic', {
   name: Sequelize.STRING,
-  description: Sequelize.TEXT
+  description: Sequelize.TEXT,
+  pinned: { type: Sequelize.BOOLEAN, defaultValue: false },
+  read: Sequelize.STRING,
+  write: Sequelize.STRING
 })
 
 const Thread = db.sequelize.define('thread', {
@@ -27,13 +27,10 @@ const Message = db.sequelize.define('message', {
 
 Message.belongsTo(Thread)
 Thread.belongsTo(Topic)
-Topic.hasOne(Group, { as: 'Restriction' })
 Topic.hasMany(Thread)
 Thread.hasMany(Message)
 Message.hasOne(User, { as: 'Author' })
 Thread.hasOne(User, { as: 'Author' })
-User.belongsTo(Group)
-Group.hasOne(Group, { as: 'Inheritence' })
 
 exports.User = User
 exports.Topic = Topic

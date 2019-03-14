@@ -13,6 +13,9 @@ exports.tokenValidation = async (req, res, next) => {
   try {
     decoded = jwt.verify(token, req.app.get('superSecret'))
   } catch (err) {
+    if (err.message === 'invalid signature' || err.message === 'jwt expired') {
+      return next()
+    }
     console.error(err)
     return res.status(503).send(errors.server_error)
   }
@@ -22,7 +25,6 @@ exports.tokenValidation = async (req, res, next) => {
 
 exports.login = async (req, res) => {
   let user = null
-  let group = null
   if (!req.body || !req.body.name || !req.body.password) {
     return res.status(400).send(errors.missing_parameters)
   }
@@ -35,8 +37,6 @@ exports.login = async (req, res) => {
     if (!pass) {
       return res.status(403).send('wrong_password')
     }
-    group = await user.getGroup()
-    group = group ? group.dataValues.name : 'default'
   } catch (err) {
     console.error(err)
     return res.status(503).send(errors.server_error)
@@ -48,7 +48,12 @@ exports.login = async (req, res) => {
     success: true,
     message: 'logged in !',
     token: token,
-    profile: { id: user.id, name: user.name, picture: user.picture, group: group }
+    profile: {
+      id: user.id,
+      name: user.name,
+      picture: user.picture,
+      rank: user.rank
+    }
   })
 }
 
@@ -66,7 +71,8 @@ exports.newAccount = async (req, res) => {
     let hash = await bcrypt.hash(req.body.password, 10)
     await data.User.create({
       name: req.body.name,
-      password: hash
+      password: hash,
+      rank: 'User'
     })
   } catch (err) {
     if (err.name === 'SequelizeUniqueConstraintError') {
