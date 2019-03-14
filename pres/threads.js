@@ -18,9 +18,13 @@ exports.newThread = async (req, res) => {
     if (permissions.sub(user.dataValues.rank, topic.dataValues.write) < 0) {
       return res.status(403).send(errors.denied)
     }
+    thread = await data.Thread.create({
+      name: req.body.name,
+      description: req.body.description
+    })
   } catch (err) {
     console.log(err)
     return res.status(503).send(errors.server_error)
   }
-  res.json({ success: true })
+  return res.json({ success: true, thread: thread.dataValues.id })
 }

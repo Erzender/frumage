@@ -15,7 +15,7 @@ app.use(bodyParser.json())
 app.use(cors())
 app.set('superSecret', process.env.SECRET || config.SECRET)
 
-app.get('/', (req, res) => res.send('Hello world'))
+app.get('/', (req, res) => res.send('The service is running on /api'))
 
 const routes = express.Router()
 

@@ -18,7 +18,8 @@ const Topic = db.sequelize.define('topic', {
 
 const Thread = db.sequelize.define('thread', {
   name: Sequelize.STRING,
-  description: Sequelize.TEXT
+  description: Sequelize.TEXT,
+  pinned: { type: Sequelize.BOOLEAN, defaultValue: false }
 })
 
 const Message = db.sequelize.define('message', {
