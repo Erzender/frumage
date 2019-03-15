@@ -28,6 +28,7 @@ routes.get('/profile/:id', account.getProfile)
 routes.get('/topics', topics.getTopics)
 routes.post('/topic', topics.newTopic)
 routes.post('/thread', threads.newThread)
+routes.get('/threads', threads.getThreads)
 
 routes.get('*', (req, res) =>
   res.status(501).send('This is not the route you are looking for.')
