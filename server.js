@@ -10,6 +10,7 @@ const login = require('./pres/login')
 const account = require('./pres/account')
 const topics = require('./pres/topics')
 const threads = require('./pres/threads')
+const messages = require('./pres/messages')
 
 app.use(bodyParser.json())
 app.use(cors())
@@ -29,6 +30,7 @@ routes.get('/topics', topics.getTopics)
 routes.post('/topic', topics.newTopic)
 routes.post('/thread', threads.newThread)
 routes.get('/threads', threads.getThreads)
+routes.post('/message', messages.newMessage)
 
 routes.get('*', (req, res) =>
   res.status(501).send('This is not the route you are looking for.')

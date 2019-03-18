@@ -23,6 +23,7 @@ exports.newThread = async (req, res) => {
       description: req.body.description
     })
     await topic.addThread(thread)
+    await thread.setAuthor(user)
   } catch (err) {
     console.log(err)
     return res.status(503).send(errors.server_error)
