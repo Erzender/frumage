@@ -31,6 +31,7 @@ routes.post('/topic', topics.newTopic)
 routes.post('/thread', threads.newThread)
 routes.get('/threads', threads.getThreads)
 routes.post('/message', messages.newMessage)
+routes.get('/messages', messages.getMessages)
 
 routes.get('*', (req, res) =>
   res.status(501).send('This is not the route you are looking for.')
