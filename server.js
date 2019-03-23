@@ -13,6 +13,15 @@ const threads = require('./pres/threads')
 const messages = require('./pres/messages')
 
 app.use(bodyParser.json())
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
+  next()
+})
+app.use(cors())
 app.set('superSecret', process.env.SECRET || config.SECRET)
 
 app.get('/', (req, res) => res.send('The service is running on /api'))
