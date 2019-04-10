@@ -1,8 +1,18 @@
 const jwt = require('jsonwebtoken')
+const Joi = require('@hapi/joi')
 
 const data = require('../data/_model')
 const errors = require('../errors')
 const bcrypt = require('bcrypt')
+
+const signupSchema = Joi.object().keys({
+  name: Joi.string()
+    .alphanum()
+    .min(3)
+    .max(30)
+    .required(),
+  password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/)
+})
 
 exports.tokenValidation = async (req, res, next) => {
   let token = req.headers['token']
@@ -58,14 +68,13 @@ exports.login = async (req, res) => {
 }
 
 exports.newAccount = async (req, res) => {
-  if (!req.body || !req.body.name || !req.body.password) {
-    return res.status(400).send(errors.missing_parameters)
-  }
-  if (req.body.name.length < 1) {
-    return res.status(400).send(errors.username_too_short)
-  }
-  if (req.body.password.length < 8) {
-    return res.status(400).send(errors.password_too_short)
+  try {
+    await Joi.validate(
+      { name: req.body.name, password: req.body.password },
+      signupSchema
+    )
+  } catch (err) {
+    res.status(400).send(errors.validation)
   }
   try {
     let hash = await bcrypt.hash(req.body.password, 10)

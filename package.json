@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Erzender/frumage#readme",
   "dependencies": {
+    "@hapi/joi": "^15.0.0",
     "bcrypt": "^3.0.4",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
