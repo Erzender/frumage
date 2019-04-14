@@ -24,7 +24,8 @@ exports.checkPerm = (node, rank) => {
 }
 
 exports.getLowerRanks = rank => {
-  return config.ranks.splice(0, config.ranks.indexOf(rank) + 1)
+  let ranks = [...config.ranks]
+  return ranks.splice(0, ranks.indexOf(rank) + 1)
 }
 
 exports.sub = (rank1, rank2) => {

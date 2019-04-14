@@ -33,6 +33,7 @@ exports.getTopics = async (req, res) => {
       })
     }
   } catch (err) {
+    console.error(err)
     return res.status(503).send(errors.server_error)
   }
   return res.json({
