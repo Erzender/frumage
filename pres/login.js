@@ -19,18 +19,22 @@ exports.tokenValidation = async (req, res, next) => {
   let decoded = null
   if (!token) {
     next()
-  }
-  try {
-    decoded = jwt.verify(token, req.app.get('superSecret'))
-  } catch (err) {
-    if (err.message === 'invalid signature' || err.message === 'jwt expired') {
-      return next()
+  } else {
+    try {
+      decoded = jwt.verify(token, req.app.get('superSecret'))
+    } catch (err) {
+      if (
+        err.message === 'invalid signature' ||
+        err.message === 'jwt expired'
+      ) {
+        return next()
+      }
+      console.error(err)
+      return res.status(503).send(errors.server_error)
     }
-    console.error(err)
-    return res.status(503).send(errors.server_error)
+    req.decoded = decoded
+    next()
   }
-  req.decoded = decoded
-  next()
 }
 
 exports.login = async (req, res) => {
