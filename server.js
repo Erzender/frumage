@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 
 const db = require('./data/_config')
+const dbInit = require('./data/_init')
 const config = require('./utils/loadConfig')
 
 const login = require('./pres/login')
@@ -48,5 +49,9 @@ routes.get('*', (req, res) =>
 app.use('/api', routes)
 
 db.sequelize.sync().then(() => {
-  app.listen(process.env.PORT || 8080)
+  dbInit().then(start => {
+    if (start) {
+      app.listen(process.env.PORT || 8080)
+    }
+  })
 })

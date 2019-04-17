@@ -63,6 +63,9 @@ exports.getMessages = async (req, res) => {
     }
     try {
       thread = await data.Thread.findByPk(threadId)
+      if (thread === null) {
+        return res.status(404).send(errors.thread_not_found)
+      }
       topic = await thread.getTopic()
       if (
         !admin &&
@@ -70,7 +73,9 @@ exports.getMessages = async (req, res) => {
       ) {
         return res.status(403).send(errors.denied)
       }
-      messages = await thread.getMessages()
+      messages = await thread.getMessages({
+        include: [{ model: data.User, as: 'Author' }]
+      })
       messages = messages
         .sort(
           (a, b) =>
@@ -79,7 +84,16 @@ exports.getMessages = async (req, res) => {
               'seconds'
             ) < 0
         )
-        .map(message => ({ ...message.dataValues }))
+        .map(m => ({
+          id: m.dataValues.id,
+          content: m.dataValues.content,
+          createdAt: m.dataValues.createdAt,
+          updatedAt: m.dataValues.updatedAt,
+          authorId: m.dataValues.Author.id,
+          authorName: m.dataValues.Author.name,
+          authorPicture: m.dataValues.Author.picture,
+          authorRank: m.dataValues.Author.rank
+        }))
     } catch (err) {
       console.log(err)
       return res.status(503).send(errors.server_error)

@@ -10,6 +10,7 @@ module.exports = {
   DB_PORT: config.DB_PORT || '',
   SECRET: config.SECRET || 'shitty secret',
   ranks: config.ranks || ['Anonymous', 'User', 'Moderator', 'Admin'],
+  defaultRank: config.defaultRank || 'User',
   permissions: config.permissions || {
     Admin: { '*': true },
     Moderator: { create_topics: true }

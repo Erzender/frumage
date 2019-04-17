@@ -8,6 +8,7 @@
   "DB_PORT": "",
   "SECRET": "shitty secret",
   "ranks": ["Anonymous", "User", "Moderator", "Admin"],
+  "defaultRank": "User",
   "permissions": {
     "Admin": { "*": true },
     "Moderator": { "create_topics": true }

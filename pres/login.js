@@ -3,6 +3,7 @@ const Joi = require('@hapi/joi')
 
 const data = require('../data/_model')
 const errors = require('../errors')
+const config = require('../utils/loadConfig')
 const bcrypt = require('bcrypt')
 
 const signupSchema = Joi.object().keys({
@@ -85,7 +86,7 @@ exports.newAccount = async (req, res) => {
     await data.User.create({
       name: req.body.name,
       password: hash,
-      rank: 'User'
+      rank: config.defaultRank
     })
   } catch (err) {
     if (err.name === 'SequelizeUniqueConstraintError') {

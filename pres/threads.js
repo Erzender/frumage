@@ -15,6 +15,9 @@ exports.newThread = async (req, res) => {
   try {
     user = await data.User.findByPk(req.decoded.id)
     topic = await data.Topic.findByPk(req.body.topic)
+    if (topic === null) {
+      return res.status(404).send(errors.topic_not_found)
+    }
     if (permissions.sub(user.dataValues.rank, topic.dataValues.write) < 0) {
       return res.status(403).send(errors.denied)
     }
