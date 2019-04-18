@@ -51,7 +51,7 @@ exports.getMessages = async (req, res) => {
   let rank = config.ranks[0] || null
   let thread = null
   let topic = null
-  let messages = null
+  let messages = []
   if (req.decoded) {
     try {
       user = await data.User.findByPk(req.decoded.id)
@@ -61,43 +61,44 @@ exports.getMessages = async (req, res) => {
       console.log(err)
       return res.status(503).send(errors.server_error)
     }
-    try {
-      thread = await data.Thread.findByPk(threadId)
-      if (thread === null) {
-        return res.status(404).send(errors.thread_not_found)
-      }
-      topic = await thread.getTopic()
-      if (
-        !admin &&
-        permissions.sub(user.dataValues.rank, topic.dataValues.read) < 0
-      ) {
-        return res.status(403).send(errors.denied)
-      }
-      messages = await thread.getMessages({
-        include: [{ model: data.User, as: 'Author' }]
-      })
-      messages = messages
-        .sort(
-          (a, b) =>
-            moment(a.dataValues.createdAt).diff(
-              b.dataValues.createdAt,
-              'seconds'
-            ) < 0
-        )
-        .map(m => ({
-          id: m.dataValues.id,
-          content: m.dataValues.content,
-          createdAt: m.dataValues.createdAt,
-          updatedAt: m.dataValues.updatedAt,
-          authorId: m.dataValues.Author.id,
-          authorName: m.dataValues.Author.name,
-          authorPicture: m.dataValues.Author.picture,
-          authorRank: m.dataValues.Author.rank
-        }))
-    } catch (err) {
-      console.log(err)
-      return res.status(503).send(errors.server_error)
-    }
   }
+  try {
+    thread = await data.Thread.findByPk(threadId)
+    if (thread === null) {
+      return res.status(404).send(errors.thread_not_found)
+    }
+    topic = await thread.getTopic()
+    if (
+      !admin &&
+      permissions.sub(rank, topic.dataValues.read) < 0
+    ) {
+      return res.status(403).send(errors.denied)
+    }
+    messages = await thread.getMessages({
+      include: [{ model: data.User, as: 'Author' }]
+    })
+    messages = messages
+      .sort(
+        (a, b) =>
+          moment(a.dataValues.createdAt).diff(
+            b.dataValues.createdAt,
+            'seconds'
+          ) < 0
+      )
+      .map(m => ({
+        id: m.dataValues.id,
+        content: m.dataValues.content,
+        createdAt: m.dataValues.createdAt,
+        updatedAt: m.dataValues.updatedAt,
+        authorId: m.dataValues.Author.id,
+        authorName: m.dataValues.Author.name,
+        authorPicture: m.dataValues.Author.picture,
+        authorRank: m.dataValues.Author.rank
+      }))
+  } catch (err) {
+    console.log(err)
+    return res.status(503).send(errors.server_error)
+  }
+
   return res.json({ success: true, messages: messages })
 }
