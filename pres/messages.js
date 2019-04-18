@@ -38,7 +38,19 @@ exports.newMessage = async (req, res) => {
     console.log(err)
     return res.status(503).send(errors.server_error)
   }
-  return res.json({ success: true, message: message.dataValues.id })
+  return res.json({
+    success: true,
+    message: {
+      id: message.dataValues.id,
+      content: message.dataValues.content,
+      createdAt: message.dataValues.createdAt,
+      updatedAt: message.dataValues.updatedAt,
+      authorId: user.id,
+      authorName: user.name,
+      authorPicture: user.picture,
+      authorRank: user.rank
+    }
+  })
 }
 
 exports.getMessages = async (req, res) => {
