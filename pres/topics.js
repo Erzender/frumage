@@ -41,7 +41,10 @@ exports.getTopics = async (req, res) => {
     topics: topics.map(topic => ({
       id: topic.dataValues.id,
       name: topic.dataValues.name,
-      description: topic.dataValues.description
+      description: topic.dataValues.description,
+      canWrite: !!permissions
+        .getLowerRanks(rank)
+        .find(test => test === topic.dataValues.write)
     }))
   })
 }

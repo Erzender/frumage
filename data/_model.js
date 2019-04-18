@@ -30,8 +30,8 @@ Message.belongsTo(Thread)
 Thread.belongsTo(Topic)
 Topic.hasMany(Thread)
 Thread.hasMany(Message)
-Message.hasOne(User, { as: 'Author' })
-Thread.hasOne(User, { as: 'Author' })
+Message.belongsTo(User, { as: 'Author' })
+Thread.belongsTo(User, { as: 'Author' })
 
 exports.User = User
 exports.Topic = Topic

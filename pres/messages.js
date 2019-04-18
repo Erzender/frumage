@@ -32,8 +32,8 @@ exports.newMessage = async (req, res) => {
       return res.status(403).send(errors.denied)
     }
     message = await data.Message.create({ content: req.body.content })
-    message.setAuthor(user)
-    thread.addMessage(message)
+    await message.setAuthor(user)
+    await thread.addMessage(message)
   } catch (err) {
     console.log(err)
     return res.status(503).send(errors.server_error)
@@ -68,10 +68,7 @@ exports.getMessages = async (req, res) => {
       return res.status(404).send(errors.thread_not_found)
     }
     topic = await thread.getTopic()
-    if (
-      !admin &&
-      permissions.sub(rank, topic.dataValues.read) < 0
-    ) {
+    if (!admin && permissions.sub(rank, topic.dataValues.read) < 0) {
       return res.status(403).send(errors.denied)
     }
     messages = await thread.getMessages({
@@ -90,10 +87,14 @@ exports.getMessages = async (req, res) => {
         content: m.dataValues.content,
         createdAt: m.dataValues.createdAt,
         updatedAt: m.dataValues.updatedAt,
-        authorId: m.dataValues.Author.id,
-        authorName: m.dataValues.Author.name,
-        authorPicture: m.dataValues.Author.picture,
-        authorRank: m.dataValues.Author.rank
+        authorId: m.dataValues.Author ? m.dataValues.Author.id : null,
+        authorName: m.dataValues.Author
+          ? m.dataValues.Author.name
+          : '<Anonymous>',
+        authorPicture: m.dataValues.Author ? m.dataValues.Author.picture : '',
+        authorRank: m.dataValues.Author
+          ? m.dataValues.Author.rank
+          : config.ranks[0]
       }))
   } catch (err) {
     console.log(err)
